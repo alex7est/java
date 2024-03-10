@@ -21,4 +21,9 @@ public class Calculadora {
 		resultado = dividendo/divisor;
 		return resultado;
 	}
+	public double promediar(double valor1, double valor2,double valor3) {
+		double resultado;
+		resultado = (valor1+valor2+valor3)/3;
+		return resultado;
+	}
 }

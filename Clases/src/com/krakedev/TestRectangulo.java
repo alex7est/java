@@ -3,14 +3,8 @@ package com.krakedev;
 public class TestRectangulo {
 
     public static void main(String[] args) {
-        Rectangulo r1 = new Rectangulo();
-        Rectangulo r2 = new Rectangulo();
-
-        r1.setBase(10);
-        r1.setAltura(5);
-
-        r2.setBase(8);
-        r2.setAltura(3);
+        Rectangulo r1 = new Rectangulo(10,5);
+        Rectangulo r2 = new Rectangulo(8,3);
 
         int areaR1 = r1.calcularArea();
         int areaR2 = r2.calcularArea();

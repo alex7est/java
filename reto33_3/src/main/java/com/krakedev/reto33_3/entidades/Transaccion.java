@@ -11,6 +11,8 @@ public class Transaccion {
     private Date fecha;
     private Date hora;
     
+    public Transaccion() {}
+    
     public Transaccion(int codigo) {
     	this.codigo = codigo;
     }
@@ -71,4 +73,11 @@ public class Transaccion {
     public void setHora(Date hora) {
         this.hora = hora;
     }
+
+	@Override
+	public String toString() {
+		return "Transaccion [codigo=" + codigo + ", numeroCuenta=" + numeroCuenta + ", monto=" + monto + ", tipo="
+				+ tipo + ", fecha=" + fecha + ", hora=" + hora + "]";
+	}
+    
 }

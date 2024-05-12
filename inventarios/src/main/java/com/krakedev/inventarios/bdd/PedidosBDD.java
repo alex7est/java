@@ -84,6 +84,7 @@ public class PedidosBDD {
 		Connection con = null;
 		PreparedStatement ps = null;
 		PreparedStatement psDet = null;
+		PreparedStatement psHis = null;
 
 		try {
 			con = ConexionBDD.obtenerConexion();
@@ -93,9 +94,11 @@ public class PedidosBDD {
 				ps = con.prepareStatement("update cabecera_pedido set estado='R' where numero=?");
 				ps.setInt(1, pedido.getCodigo());
 				ps.executeUpdate();
-
+				
 				ArrayList<DetallePedido> detallesPedido = pedido.getDetalles();
 				DetallePedido det;
+				Date fechaActual = new Date();
+				java.sql.Timestamp timestamp = new java.sql.Timestamp(fechaActual.getTime());
 
 				for (int i = 0; i < detallesPedido.size(); i++) {
 					det = detallesPedido.get(i);
@@ -109,7 +112,15 @@ public class PedidosBDD {
 					psDet.setInt(3, det.getCodigo());
 
 					psDet.executeUpdate();
-
+					
+					psHis = con.prepareStatement("insert into historial_stock(fecha, referencia, producto, cantidad) values(?,?,?,?);");
+					psHis.setTimestamp(1, timestamp);
+					psHis.setString(2, "PEDIDO "+pedido.getCodigo());
+					psHis.setInt(3, det.getProducto().getCodigo());
+					psHis.setInt(4, det.getCantidadRecibida());
+					
+					psHis.executeUpdate();
+					
 				}
 			} else {
 				System.out.println("ERROR AL OBTENER CONEXION");

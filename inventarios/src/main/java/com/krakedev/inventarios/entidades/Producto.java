@@ -7,7 +7,7 @@ public class Producto {
     private String nombre;
     private UnidadMedida unidadMedida;
     private BigDecimal precioVenta;
-    private boolean tieneLVA;
+    private boolean tieneIVA;
     private BigDecimal coste;
     private Categoria categoria;
     private int stock;
@@ -20,7 +20,7 @@ public class Producto {
         this.nombre = nombre;
         this.unidadMedida = unidadMedida;
         this.precioVenta = precioVenta;
-        this.tieneLVA = tieneLVA;
+        this.tieneIVA = tieneLVA;
         this.coste = coste;
         this.categoria = categoria;
         this.stock = stock;
@@ -58,12 +58,12 @@ public class Producto {
         this.precioVenta = precioVenta;
     }
 
-    public boolean isTieneLVA() {
-        return tieneLVA;
+    public boolean isTieneIVA() {
+        return tieneIVA;
     }
 
-    public void setTieneLVA(boolean tieneLVA) {
-        this.tieneLVA = tieneLVA;
+    public void setTieneLVA(boolean tieneIVA) {
+        this.tieneIVA = tieneIVA;
     }
 
     public BigDecimal getCoste() {
@@ -93,6 +93,6 @@ public class Producto {
     @Override
 	public String toString() {
 		return "Producto [codigo=" + codigo + ", nombre=" + nombre + ", unidadMedida=" + unidadMedida + ", precioVenta="
-				+ precioVenta + ", tieneLVA=" + tieneLVA + ", coste=" + coste + ", categoria=" + categoria + ", stock="	+ stock + "]";
+				+ precioVenta + ", tieneLVA=" + tieneIVA + ", coste=" + coste + ", categoria=" + categoria + ", stock="	+ stock + "]";
 	}
 }

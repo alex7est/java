@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import com.krakedev.inventarios.entidades.Categoria;
 import com.krakedev.inventarios.entidades.Producto;
+import com.krakedev.inventarios.entidades.Proveedor;
 import com.krakedev.inventarios.entidades.UnidadMedida;
 import com.krakedev.inventarios.excepciones.KrakedevExcepcion;
 import com.krakedev.inventarios.utils.ConexionBDD;
@@ -66,5 +67,45 @@ public class ProductoBDD {
 			}
 		}
 		return productos;
+	}
+	
+	public void insertar(Producto producto) throws KrakedevExcepcion {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			con = ConexionBDD.obtenerConexion();
+			if (con != null) {
+				System.out.println("CONECTADO");
+				ps=con.prepareStatement ("insert into productos(nombre, udm, precio_venta, tiene_iva, coste, categoria, stock) values(?,?,?,?,?,?,?)"); 				
+			
+				ps.setString(1, producto.getNombre());
+				ps.setString(2, producto.getUnidadMedida().getCodigo());
+				ps.setBigDecimal(3, producto.getPrecioVenta());
+				ps.setBoolean(4, producto.isTieneIVA());
+				ps.setBigDecimal(5, producto.getCoste());
+				ps.setInt(6, producto.getCategoria().getCodigo());
+				ps.setInt(7, producto.getStock());
+				ps.executeUpdate();
+			
+			} else {
+				System.out.println("ERROR AL OBTENER CONEXION");
+			}
+		} catch (KrakedevExcepcion e) {
+			e.printStackTrace();
+			throw e;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new KrakedevExcepcion("Error al insertar. Detalle: " + e.getMessage());
+		} finally {			
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }

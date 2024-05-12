@@ -1,18 +1,18 @@
 package com.krakedev.inventarios.entidades;
 
 public class TipoDocumentos {
-	private char codigo;
+	private String codigo;
 	private String descripcion;
 	
 	public TipoDocumentos() {}
 
-	public TipoDocumentos(char codigo, String descripcion) {
+	public TipoDocumentos(String codigo, String descripcion) {
 		super();
 		this.codigo = codigo;
 		this.descripcion = descripcion;
 	}
 
-	public char getCodigo() {
+	public String getCodigo() {
 		return codigo;
 	}
 
@@ -20,7 +20,7 @@ public class TipoDocumentos {
 		return descripcion;
 	}
 
-	public void setCodigo(char codigo) {
+	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
 

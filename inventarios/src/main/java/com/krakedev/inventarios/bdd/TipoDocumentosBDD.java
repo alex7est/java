@@ -25,7 +25,7 @@ public class TipoDocumentosBDD {
 				rs = ps.executeQuery();
 
 				while (rs.next()) {
-					char codigo = rs.getString("codigo").charAt(0);
+					String codigo = rs.getString("codigo");
 					String descripcion = rs.getString("descripcion");
 
 					TipoDocumentos tipoDoc = new TipoDocumentos(codigo, descripcion);

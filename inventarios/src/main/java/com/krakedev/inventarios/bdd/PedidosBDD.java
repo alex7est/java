@@ -8,9 +8,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.krakedev.inventarios.entidades.DetallePedido;
+import com.krakedev.inventarios.entidades.EstadoPedido;
 import com.krakedev.inventarios.entidades.Pedido;
+import com.krakedev.inventarios.entidades.Producto;
+import com.krakedev.inventarios.entidades.Proveedor;
 import com.krakedev.inventarios.excepciones.KrakedevExcepcion;
 import com.krakedev.inventarios.utils.ConexionBDD;
 
@@ -141,4 +146,85 @@ public class PedidosBDD {
 			}
 		}
 	}
+	
+	public ArrayList<Pedido> recuperarPedidosPorProveedor(String identificador) throws KrakedevExcepcion {
+	    Connection con = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    ArrayList<Pedido> pedidos = new ArrayList<>();
+
+	    try {
+	        con = ConexionBDD.obtenerConexion();
+	        if (con != null) {
+	            System.out.println("CONECTADO");
+	            String sql = "SELECT p.numero AS pedido_codigo, p.fecha, p.estado, d.codigo AS detalle_codigo, d.producto, d.cantidad_solicitada, cast(d.subtotal as decimal(5,2)), d.cantidad_recibida "
+	            		   + "FROM cabecera_pedido AS p JOIN detalle_pedido d ON p.numero = d.cabecera_pedido WHERE p.proveedor = ?;";	            
+	            ps = con.prepareStatement(sql);
+	            ps.setString(1, identificador);
+	            rs = ps.executeQuery();
+
+	            Map<Integer, Pedido> pedidoMap = new HashMap<>();
+	            while (rs.next()) {
+	                int pedidoCodigo = rs.getInt("pedido_codigo");
+
+	                Pedido pedido = pedidoMap.get(pedidoCodigo);
+	                if (pedido == null) {
+	                    pedido = new Pedido();
+	                    pedido.setCodigo(pedidoCodigo);
+	                    Proveedor proveedor = new Proveedor();
+	                    proveedor.setIdentificador(identificador);
+	                    pedido.setProveedor(proveedor);
+	                    pedido.setFecha(rs.getDate("fecha"));
+	                    EstadoPedido estado = new EstadoPedido(); 
+	                    estado.setCodigo(rs.getString("estado"));
+	                    pedido.setEstado(estado);
+	                    pedido.setDetalles(new ArrayList<DetallePedido>());
+	                    pedidoMap.put(pedidoCodigo, pedido);
+	                }
+
+	                DetallePedido detalle = new DetallePedido();
+	                detalle.setCodigo(rs.getInt("detalle_codigo"));
+	                Pedido pedidoDet = new Pedido();
+	                pedidoDet.setCodigo(pedidoCodigo);
+	                detalle.setCabecera(pedidoDet);
+	                Producto producto = new Producto();
+	                producto.setCodigo(rs.getInt("producto"));
+	                detalle.setProducto(producto);
+	                detalle.setCantidadSolicitada(rs.getInt("cantidad_solicitada"));	                
+	                detalle.setSubtotal(rs.getBigDecimal("subtotal"));
+	                detalle.setCantidadRecibida(rs.getInt("cantidad_recibida"));
+
+	                pedido.getDetalles().add(detalle);
+	            }
+
+	            pedidos.addAll(pedidoMap.values());
+	        } else {
+	            System.out.println("ERROR AL OBTENER CONEXION");
+	        }
+	    } catch (KrakedevExcepcion e) {
+	        e.printStackTrace();
+	        throw e;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        throw new KrakedevExcepcion("Error al recuperar pedidos. Detalle: " + e.getMessage());
+	    } finally {
+	        if (rs != null) {
+	            try {
+	                rs.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	        if (con != null) {
+	            try {
+	                con.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    }
+
+	    return pedidos;
+	}
+
 }

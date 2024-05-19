@@ -108,4 +108,92 @@ public class ProductoBDD {
 			}
 		}
 	}
+	
+	public void actualizar(Producto producto) throws KrakedevExcepcion {
+		Connection con = null;
+		PreparedStatement ps = null;
+
+		try {
+			con = ConexionBDD.obtenerConexion();
+			if (con != null) {
+				System.out.println("CONECTADO");
+				ps = con.prepareStatement("UPDATE productos SET nombre = ?, udm = ?, precio_venta = ?, tiene_iva = ?, coste = ?, categoria = ? WHERE codigo_producto = ?");
+
+				ps.setString(1, producto.getNombre());
+				ps.setString(2, producto.getUnidadMedida().getCodigo());
+				ps.setBigDecimal(3, producto.getPrecioVenta());
+				ps.setBoolean(4, producto.isTieneIVA());
+				ps.setBigDecimal(5, producto.getCoste());
+				ps.setInt(6, producto.getCategoria().getCodigo());
+				ps.setInt(7, producto.getCodigo());
+				ps.executeUpdate();
+			
+			} else {
+				System.out.println("ERROR AL OBTENER CONEXION");
+			}
+		} catch (KrakedevExcepcion e) {
+			e.printStackTrace();
+			throw e;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new KrakedevExcepcion("Error al actualizar. Detalle: " + e.getMessage());
+		} finally {			
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public Producto buscarPorCodigo(int codigo) throws KrakedevExcepcion {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Producto producto = null;
+
+		try {
+			con = ConexionBDD.obtenerConexion();
+			if (con != null) {
+				System.out.println("CONECTADO");
+				ps=con.prepareStatement ("select codigo_producto, nombre, udm, cast(precio_venta as decimal(5,2)), tiene_iva, cast(coste as decimal(5,2)), categoria, stock from productos where codigo_producto=?"); 				
+				ps.setInt(1, codigo);
+				rs = ps.executeQuery();
+				
+				if (rs.next()) {
+					int codigoProducto = rs.getInt("codigo_producto");
+					String nombreProducto = rs.getString("nombre");
+					String nombreUdm = rs.getString("udm");
+					BigDecimal precioVenta = rs.getBigDecimal("precio_venta");
+					boolean tieneIVA = rs.getBoolean("tiene_iva");
+					BigDecimal coste = rs.getBigDecimal("coste");
+					int categoria = rs.getInt("categoria");
+					int stock = rs.getInt("stock");
+					UnidadMedida udm = new UnidadMedida(nombreUdm,null,null);
+					Categoria cat = new Categoria(categoria, null, null);					
+					producto = new Producto(codigoProducto, nombreProducto, udm, precioVenta, tieneIVA, coste, cat, stock);
+				}
+			
+			} else {
+				System.out.println("ERROR AL OBTENER CONEXION");
+			}
+		} catch (KrakedevExcepcion e) {
+			e.printStackTrace();
+			throw e;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new KrakedevExcepcion("Error al consultar. Detalle: " + e.getMessage());
+		} finally {			
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return producto;
+	}
 }
